@@ -156,3 +156,161 @@ tag:
 </project>
 ```
 
+## IDEA调整
+
+### 自动热部署
+
+引入依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>
+```
+
+添加插件（可直接放到父POM
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+                <fork>true</fork>
+                <addResources>true</addResources>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+开启自动编译选项
+
+`build, Exception, Deployment` 启用 `build project automatically` `compile independent modules`
+
+~~算了，这玩意根本不好用~~
+
+## Nacos
+
+服务注册和配置中心
+
+[下载](https://github.com/alibaba/nacos/releases)
+
+单例启动
+
+```shell
+bash startup.sh -m standalone
+```
+
+### 服务注册
+
+yaml配置
+
+```yml
+spring:
+  application:
+    name: cloud-payment-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ip:8848
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+```
+
+主启动类 `@EnableDiscoveryClient`
+
+#### CP AP
+
+todo
+
+### 配置中心
+
+#### 基础配置
+
+```yaml
+cloud:
+    nacos:
+      discovery:
+        server-addr: ip:8848
+      config:
+        server-addr: ip:8848
+        file-extension: yaml
+```
+
+设置`dataId`: `${prefix}-${spring.profile-actice}.${file-extension}`
+
+`prefix`默认为 `spring.application.name`，也可配置为 `spring.cloud.nacos.config.prefix`
+
+通过 `@RefreshScope`实现自动更新
+
+进入Nacos编写配置
+
+#### 分类配置
+
+Nacos默认的namespace是`public`，namespace主要用来实现隔离，比方说生产环境、测试环境、开发环境之间
+
+默认的group是`DEFAULT_GROUP`，group可以吧不同的微服务划分到同一个分组里面去
+
+service就是微服务，一个service可以包含多个cluster，Nacos默认的cluster是`DEFAULT`，cluster是对指定微服务的一个虚拟划分；比方说为了容灾，将service微服务分别部署在杭州机房和广州机房，这时就可以给杭州机房的service微服务起集群名称`HZ`
+
+instance是微服务的实例
+
+
+
+case
+
+DataId方案：默认namespace+默认group，使用`spring.profile.active`来进行多环境下配置文件的读取
+
+Group方案：`spring.cloud.nacos.config.group`
+
+Namespace方案: `spring.cloud.nacos.config.namespace`
+
+### 切换数据库
+
+`conf/nacos-mysql.sql` 复制运行
+
+`conf/application.properties`修改db相关
+
+#### 集群
+
+`unable to find local peer`: 需要保证`cluster.conf`里的配置与`hostname -i`的结果一致
+
+修改hostname ：`hostnamectl set-hostname xxx`
+
+以上都是废话，用这个 `JAVA_OPT="${JAVA_OPT} -Dnacos.server.ip=ip"`
+
+#### nginx配置
+
+`nginx -t`检查conf正确性
+
+```nginx
+upstream cluster{
+      server 203..233:8848;
+      server 120..118:8848;
+      server 121..118:8848;
+  }
+  
+server {
+      listen 8847;
+      server_name 121..118:8847;
+  
+      location / {
+          proxy_pass http://cluster;
+      }
+ }
+
+```
+
+
+
+
+
