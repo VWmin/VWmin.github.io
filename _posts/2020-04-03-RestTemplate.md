@@ -23,3 +23,4 @@ tag:
 </dependency>
 ```
 
+或者序列化对象指定 `@JsonProperty`

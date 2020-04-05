@@ -228,6 +228,18 @@ management:
 
 主启动类 `@EnableDiscoveryClient`
 
+通过名称访问服务时使用的`RestTemplate`，一定要加`@LoadBalance`，否则通过名称访问会报错`UnknownHost`
+
+```java
+@Bean
+    @LoadBalanced
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+```
+
+
+
 #### CP AP
 
 todo
@@ -288,9 +300,11 @@ Namespace方案: `spring.cloud.nacos.config.namespace`
 
 以上都是废话，用这个 `JAVA_OPT="${JAVA_OPT} -Dnacos.server.ip=ip"`
 
-#### nginx配置
+### nginx配置
 
 `nginx -t`检查conf正确性
+
+`nginx -s reload`
 
 ```nginx
 upstream cluster{
@@ -309,6 +323,10 @@ server {
  }
 
 ```
+
+## Sentinel
+
+流量控制、熔断降级组件
 
 
 
