@@ -228,7 +228,7 @@ management:
 
 主启动类 `@EnableDiscoveryClient`
 
-通过名称访问服务时使用的`RestTemplate`，一定要加`@LoadBalance`，否则通过名称访问会报错`UnknownHost`
+通过名称访问服务时使用的`RestTemplate`，一定要加`@LoadBalance`，否则通过名称访问会报错`UnknownHost`，这时再使用这个Bean就必须通过应用名访问接口了
 
 ```java
 @Bean
