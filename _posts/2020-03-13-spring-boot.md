@@ -1536,11 +1536,41 @@ Spring Boot默认支持两种技术来和ES交互
 
 `@Scheduled`于方法名
 
-![1555071446534]({{ site.url }}/assets/2020-03-13-spring-boot.assets/1555071446534.png)
+![1555071446534](..//assets/2020-03-13-spring-boot.assets/1555071446534.png)
 
-### 3、邮件任务
+### 3、事件
 
+```java
+//事件推送者
+private final ApplicationEventPublisher publisher;
+publisher.pulish(myEvent);
+```
 
+```java
+//创建一个自定义事件
+public class MyEvent extends ApplicationEvent {
+    public MyEvent(Object source) {
+        super(source);
+    }
+}
+```
+
+```java
+//创建一个事件接收者
+@Component
+public class NewWorksListener implements ApplicationListener<NewWorksEvent> {
+
+    @Override
+    public void onApplicationEvent(MyEvent event) {
+        // 收到事件
+    }
+    
+}
+```
+
+事件推送后，默认时同步等待事件处理的
+
+对事件处理方法标记异步，来使事件异步执行
 
 ## 十一、SpringBoot与安全
 
@@ -1613,3 +1643,20 @@ sec:authentication="principal.authorities" //用户拥有的角色集
 sec:authorize="hasRole('VIP1')" //判断用户是否拥有某一角色
 ```
 
+## 其他
+
+### 动态创建Bean
+
+```java
+DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getBeanFactory();
+        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(obj.getClass());
+        beanFactory.registerBeanDefinition("BeanName", beanDefinitionBuilder.getBeanDefinition());
+```
+
+### 动态加入Bean
+
+```java
+applicationContext.getBeanFactory().registerSingleton("Beanname", obj);
+```
+
+L(7x?_d*tw+qAXHD
