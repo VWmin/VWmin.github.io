@@ -3,6 +3,7 @@ title: 初学SpringBoot
 tag: 
   - java
   - springboot
+typora-root-url: ../
 ---
 
 <!--more-->
@@ -1536,7 +1537,7 @@ Spring Boot默认支持两种技术来和ES交互
 
 `@Scheduled`于方法名
 
-![1555071446534](..//assets/2020-03-13-spring-boot.assets/1555071446534.png)
+![1555071446534](/assets/2020-03-13-spring-boot.assets/1555071446534.png)
 
 ### 3、事件
 
